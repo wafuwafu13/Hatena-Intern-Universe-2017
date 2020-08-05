@@ -1,0 +1,11 @@
+@(ctx: ViewContext, bookmark: Bookmark)
+@wrapper("Delete Bookmark: " + bookmark.entry.title){
+  <dl>
+    <dt>URL:</dt><dd><a href="@bookmark.entry.url">@bookmark.entry.url</a></dd>
+    <dt>Comment:</dt><dd>@bookmark.comment</dd>
+  </dl>
+  <form action="/bookmarks/@bookmark.id/delete" method="POST" onsubmit="confirm('Certainly?')">
+    <input type="hidden" name="@ctx.csrfKey" value="@ctx.csrfToken">
+    <input type="submit" value="Delete"/> <a href="/bookmarks">List</a>
+  </form>
+}

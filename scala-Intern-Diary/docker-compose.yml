@@ -1,0 +1,28 @@
+version: '3'
+services:
+  sbt:
+    image: motemen/sbt:0.13.15
+    ports:
+      - 8080:8080
+    volumes:
+      - .docker-ivy2-cache:/root/.ivy2
+      - .:/app
+    environment:
+      USER: $USER
+      DATABASE_HOST: db
+      DATABASE_NAME: intern_diary
+      TEST_DATABASE_HOST: db
+    # env_file: .env
+    working_dir: /app
+    links:
+      - db
+    tty: true
+    stdin_open: true
+    # command: ["~jetty:start"]
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./db/docker:/docker-entrypoint-initdb.d
+      - .:/app
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1

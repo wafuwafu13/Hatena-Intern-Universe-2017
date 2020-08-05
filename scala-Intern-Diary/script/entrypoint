@@ -1,0 +1,19 @@
+#!/usr/local/aws/bin/python
+import os, sys, json
+import botocore.session
+try:
+    session = botocore.session.get_session()
+    client = session.create_client('ssm')
+    config = json.loads(os.environ['CONFIG'])
+    path = config['ParameterPath'] + '/env/'
+    response = client.get_parameters_by_path(
+        Path=path,
+        WithDecryption=True)
+    for parameter in response['Parameters']:
+        name = parameter['Name'][len(path):]
+        value = parameter['Value']
+        os.environ[name] = value
+except:
+    pass
+finally:
+    os.execvp(sys.argv[1], sys.argv[1:])

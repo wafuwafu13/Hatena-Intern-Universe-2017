@@ -1,0 +1,50 @@
+#!/usr/local/aws/bin/python
+import os, sys, json
+import botocore.session
+
+class Parameters(object):
+    def __init__(self, client, path):
+        self.client = client
+        self.path = path
+        self.next_token = None
+        self.__request__()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.response)
+        except StopIteration:
+            if self.next_token:
+                self.__request__()
+                return next(self.response)
+            else:
+                raise StopIteration()
+    next = __next__ # For python 2.x
+
+    def __request__(self):
+        params = dict(Path=self.path, WithDecryption=True)
+        if self.next_token:
+            params['NextToken'] = self.next_token
+        response = self.client.get_parameters_by_path(**params)
+        self.next_token = response.get('NextToken')
+        self.response = iter(response['Parameters'])
+
+def set_environment():
+    session = botocore.session.get_session()
+    client = session.create_client('ssm')
+    config = json.loads(os.environ['CONFIG'])
+    path = config['ParameterPath'] + '/env/'
+    parameters = Parameters(client, path)
+    for parameter in parameters:
+        name = parameter['Name'][len(path):]
+        os.environ[name] = parameter['Value']
+
+if __name__ == "__main__":
+    try:
+        set_environment()
+    except:
+        pass
+    finally:
+        os.execvp(sys.argv[1], sys.argv[1:])

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hatena-Intern-Exercise : JavaScript</title>
+  <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+  <script src="http://chaijs.com/chai.js"></script>
+  <script>mocha.setup('bdd')</script>
+  <script src="main.js"></script>
+  <script src="test.js"></script>
+  <script id="testdata" type="text/plain"></script>
+  <script>
+    mocha.checkLeaks();
+    mocha.globals(['chai']);
+    mocha.run();
+  </script>
+</body>
+</html>
